@@ -1,0 +1,22 @@
+{
+  "name": "node-js-introduction",
+  "version": "0.0.1",
+  "description": "nodeJs course 2023",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZakharovOwl/node-js-course-2023.git"
+  },
+  "keywords": [
+    "node-js"
+  ],
+  "author": "Zakharau Aleksandr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZakharovOwl/node-js-course-2023/issues"
+  },
+  "homepage": "https://github.com/ZakharovOwl/node-js-course-2023#readme"
+}
