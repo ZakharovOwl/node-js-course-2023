@@ -1,0 +1,23 @@
+{
+  "name": "hw2-standard-library",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZakharovOwl/node-js-course-2023.git"
+  },
+  "keywords": [
+    "node",
+    "js"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZakharovOwl/node-js-course-2023/issues"
+  },
+  "homepage": "https://github.com/ZakharovOwl/node-js-course-2023#readme"
+}
