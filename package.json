@@ -1,0 +1,32 @@
+{
+  "name": "hm3-event-emitter-vs-buffers-vs-streams",
+  "version": "0.0.1",
+  "description": "",
+  "main": "event-emitter.js",
+  "scripts": {
+    "task1": "nodemon test.js",
+    "task2": "node with-time.js",
+    "task3": "nodemon convert-csv-to-json.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZakharovOwl/node-js-course-2023.git"
+  },
+  "keywords": [
+    "node",
+    "js"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZakharovOwl/node-js-course-2023/issues"
+  },
+  "homepage": "https://github.com/ZakharovOwl/node-js-course-2023#readme",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "csvtojson": "^2.0.10",
+    "node-fetch": "^3.3.2"
+  }
+}
