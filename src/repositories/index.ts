@@ -14,63 +14,67 @@ import {
   deleteUserHandler,
   getAllUsersHandler,
 } from "../controllers/userController";
-
+import { MikroORM } from "@mikro-orm/core";
+import config from "../config/mikro-orm.config";
+import { PostgreSqlDriver } from "@mikro-orm/postgresql";
+import { SeedDataSeeder } from "../seeders/SeedDataSeeder";
 
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(bodyParser.json());
 
-const pgp = require("pg-promise")();
-export const db = pgp({
-  user: "node_db",
-  password: "password123",
-  host: "localhost",
-  port: 5432,
-  database: "node_db",
-});
-app.use((req, res, next) => {
-  // @ts-ignore
-  req.db = db;
-  next();
-});
-db.connect()
-  .then(() => {
-    console.log("Successfully connected to the PostgreSQL database");
-  })
-  .catch((error: any) => {
-    console.error("DB error:", error);
+async function main() {
+  const orm = await MikroORM.init<PostgreSqlDriver>(config);
+  await orm.getMigrator().up(); // getMigrator
+  if (await orm.isConnected()) {
+    console.log("Connected to the database");
+    // const seeder = new SeedDataSeeder();
+    // await seeder.run(orm.em);
+  } else {
+    console.log("Error: Connect to the database");
+  }
+
+  app.use((req, res, next) => {
+    (req as any).orm = orm;
+    next();
   });
 
-// Create user
-app.post("/api/user", createUserHandler);
+  app.use(bodyParser.json());
 
-// Get users
-app.get("/api/users", getAllUsersHandler);
+  // Create user
+  app.post("/api/user", createUserHandler);
 
-// Update user cart
-app.delete("/api/users/:id", authenticateUser, deleteUserHandler);
+  // Get users
+  app.get("/api/users", getAllUsersHandler);
 
-// Create user cart
-app.post("/api/profile/cart", authenticateUser, createCart);
+  // Update user cart
+  app.delete("/api/users/:id", authenticateUser, deleteUserHandler);
 
-// Get user cart
-app.get("/api/profile/cart", authenticateUser, getCart);
+  // Create user cart
+  app.post("/api/profile/cart", authenticateUser, createCart);
 
-// Update user cart
-app.put("/api/profile/cart", authenticateUser, updateCart);
+  // Get user cart
+  app.get("/api/profile/cart", authenticateUser, getCart);
 
-// Empty user cart
-app.delete("/api/profile/cart", authenticateUser, deleteCart);
+  // Update user cart
+  app.put("/api/profile/cart", authenticateUser, updateCart);
 
-// Create an order
-app.post("/api/profile/cart/checkout", authenticateUser, checkoutOrder);
+  // Empty user cart
+  app.delete("/api/profile/cart", authenticateUser, deleteCart);
 
-// Returns a list of products
-app.get("/api/products", authenticateUser, getProductsList);
+  // Create an order
+  app.post("/api/profile/cart/checkout", authenticateUser, checkoutOrder);
 
-// Returns a single product
-app.get("/api/products/:productId", authenticateUser, getProductById);
+  // Returns a list of products
+  app.get("/api/products", authenticateUser, getProductsList);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  // Returns a single product
+  app.get("/api/products/:productId", authenticateUser, getProductById);
+
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+main().catch((error) => {
+  console.error(error);
 });

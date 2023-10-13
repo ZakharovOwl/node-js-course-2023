@@ -8,8 +8,8 @@ POST http://localhost:3000/api/user
 Content-Type: application/json
 
 {
-  "username": "Test1 Test2",
-  "email": "test@example.com"
+  "username": "Test4 Test4",
+  "email": "test4@example.com"
 }
 
 ###
@@ -28,8 +28,8 @@ x-user-id: 366e56d2-514d-439d-b6a8-ee1669b00986
 ###
 # create cart
 POST http://localhost:3000/api/profile/cart
-x-user-id: 484409aa-f011-4f06-ada5-93fc68715433
+x-user-id: a141d3e3-1dd4-4578-821e-61795d646534
 
 {
-  "user_id": "484409aa-f011-4f06-ada5-93fc68715433"
+  "user_id": "a141d3e3-1dd4-4578-821e-61795d646534"
 }

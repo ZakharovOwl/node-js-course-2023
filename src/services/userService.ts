@@ -1,39 +1,42 @@
-import { v4 as uuidv4 } from "uuid";
-import { User } from "../types/types";
-import { db } from "../repositories/index";
+import { EntityManager } from "@mikro-orm/core";
+import { User } from "../entities/User";
 
-export async function createUser(user: User): Promise<User> {
+export async function createUser(em: EntityManager, user: User): Promise<User> {
   try {
-    const userId: string = uuidv4();
-    const newUser: User = {
-      ...user,
-      id: userId,
-    };
-    await db.none("INSERT INTO users(id, username, email) VALUES($1, $2, $3)", [
-      newUser.id,
-      newUser.username,
-      newUser.email,
-    ]);
+    const newUser = new User(user.username, user.email);
+    em.persistAndFlush(newUser);
 
     return newUser;
   } catch (error) {
+    console.error("Error creating user:", error);
     throw new Error("Error creating user");
   }
 }
 
-export async function getAllUsers(): Promise<User[]> {
+export async function getAllUsers(em: EntityManager): Promise<User[]> {
   try {
-    const users = await db.any("SELECT * FROM users");
+    const users = await em.find(User, {});
     return users;
   } catch (error) {
+    console.error("Error fetching all users:", error);
     throw new Error("Error fetching all users");
   }
 }
 
-export async function deleteUser(userId: string): Promise<void> {
+export async function deleteUser(
+  em: EntityManager,
+  userId: string,
+): Promise<void> {
   try {
-    await db.none("DELETE FROM users WHERE id = $1", userId);
+    const user = await em.findOne(User, { id: userId });
+    if (user) {
+      em.remove(user);
+      await em.flush();
+    } else {
+      throw new Error("User not found");
+    }
   } catch (error) {
+    console.error("Error deleting user:", error);
     throw new Error("Error deleting user");
   }
 }
