@@ -25,10 +25,12 @@ const port = process.env.PORT || 3000;
 async function main() {
   const orm = await MikroORM.init<PostgreSqlDriver>(config);
   await orm.getMigrator().up(); // getMigrator
+  const em = orm.em.fork();
   if (await orm.isConnected()) {
     console.log("Connected to the database");
-    // const seeder = new SeedDataSeeder();
-    // await seeder.run(orm.em);
+    const seeder = new SeedDataSeeder();
+    await seeder.run(em);
+    console.log("Added data for tests");
   } else {
     console.log("Error: Connect to the database");
   }
