@@ -1,6 +1,5 @@
-import { writeFile, readFile } from "fs/promises";
+import { db } from "../repositories/index";
 import { v4 as uuidv4 } from "uuid";
-import { CARTS_FILE_PATH } from "../constants/filePaths";
 import { Cart } from "../types/types";
 
 /**
@@ -12,31 +11,25 @@ export async function createUserCart(userId: string): Promise<Cart> {
   try {
     const cartId = uuidv4();
 
-    const cartData = await readFile(CARTS_FILE_PATH, "utf8");
-    const allCarts: Cart[] = JSON.parse(cartData);
+    // Check if a user's cart already exists in the database.
+    const userCart = await db.oneOrNone('SELECT * FROM carts WHERE user_id = $1 AND is_deleted = $2', [userId, false]);
 
-    const userCartIndex = allCarts.findIndex(
-      (cart) => cart.userId === userId && !cart.isDeleted
-    );
-
-    if (userCartIndex === -1) {
-      const newCart: Cart = {
+    if (!userCart) {
+      // User's cart doesn't exist; create a new cart in the database.
+      const newCart = {
         id: cartId,
         userId: userId,
         isDeleted: false,
         items: [],
       };
-      allCarts.push(newCart);
 
-      await writeFile(
-        CARTS_FILE_PATH,
-        JSON.stringify(allCarts, null, 2),
-        "utf8"
-      );
+      await db.none('INSERT INTO carts (id, user_id, is_deleted, items) VALUES ($1, $2, $3, $4)',
+        [newCart.id, newCart.userId, newCart.isDeleted, newCart.items]);
 
       return newCart;
     } else {
-      return allCarts[userCartIndex];
+      // User's cart already exists in the database.
+      return userCart;
     }
   } catch (error) {
     throw new Error("Error creating cart");
@@ -45,25 +38,24 @@ export async function createUserCart(userId: string): Promise<Cart> {
 
 export async function getUserCart(userId: string): Promise<Cart> {
   try {
-    const cartData = await readFile(CARTS_FILE_PATH, "utf8");
-    const carts: Cart[] = JSON.parse(cartData);
-
-    const userCart = carts.find(
-      (cart) => cart.userId === userId && !cart.isDeleted
-    );
+    // Retrieve the user's cart from the database.
+    const userCart = await db.oneOrNone('SELECT * FROM carts WHERE user_id = $1 AND is_deleted = $2', [userId, false]);
 
     if (userCart) {
+      // User's cart exists in the database.
       return userCart;
     } else {
+      // User's cart doesn't exist; create a new cart.
       const cartId = uuidv4();
-
-      const newCart: Cart = {
+      const newCart = {
         id: cartId,
         userId: userId,
         isDeleted: false,
         items: [],
       };
-      carts.push(newCart);
+
+      await db.none('INSERT INTO carts (id, user_id, is_deleted, items) VALUES ($1, $2, $3, $4)',
+        [newCart.id, newCart.userId, newCart.isDeleted, newCart.items]);
 
       return newCart;
     }
@@ -72,38 +64,27 @@ export async function getUserCart(userId: string): Promise<Cart> {
   }
 }
 
-/**
- * Service function to update a user's cart.
- * @param userId The ID of the user whose cart is being updated.
- * @param updatedCart The updated cart object.
- * @returns The updated cart.
- */
-export async function updateUserCart(
-  userId: string,
-  updatedCart: Cart
-): Promise<Cart> {
+export async function updateUserCart(userId: string, updatedCart: Cart): Promise<Cart> {
   try {
-    const cartData = await readFile(CARTS_FILE_PATH, "utf8");
-    const carts: Cart[] = JSON.parse(cartData);
+    // Check if the user's cart exists in the database.
+    const userCart = await db.oneOrNone('SELECT * FROM carts WHERE user_id = $1 AND is_deleted = $2', [userId, false]);
 
-    const userCartIndex = carts.findIndex(
-      (cart) => cart.userId === userId && !cart.isDeleted
-    );
-
-    if (userCartIndex !== -1) {
-      carts[userCartIndex].items = updatedCart.items;
+    if (userCart) {
+      // User's cart exists; update it in the database.
+      await db.none('UPDATE carts SET items = $1 WHERE user_id = $2', [updatedCart.items, userId]);
     } else {
+      // User's cart doesn't exist; create a new cart.
       const cartId = uuidv4();
-      const newCart: Cart = {
+      const newCart = {
         id: cartId,
         userId: userId,
         isDeleted: false,
         items: updatedCart.items,
       };
-      carts.push(newCart);
-    }
 
-    await writeFile(CARTS_FILE_PATH, JSON.stringify(carts, null, 2), "utf8");
+      await db.none('INSERT INTO carts (id, user_id, is_deleted, items) VALUES ($1, $2, $3, $4)',
+        [newCart.id, newCart.userId, newCart.isDeleted, newCart.items]);
+    }
 
     return updatedCart;
   } catch (error) {
@@ -111,24 +92,10 @@ export async function updateUserCart(
   }
 }
 
-/**
- * Service function to delete a user's cart.
- * @param userId The ID of the user whose cart should be marked as deleted.
- * @returns A Promise that resolves when the cart is marked as deleted.
- */
 export async function deleteUserCart(userId: string): Promise<void> {
   try {
-    const cartData = await readFile(CARTS_FILE_PATH, "utf8");
-    const carts: Cart[] = JSON.parse(cartData);
-
-    const userCartIndex = carts.findIndex(
-      (cart) => cart.userId === userId && !cart.isDeleted
-    );
-
-    if (userCartIndex !== -1) {
-      carts[userCartIndex].isDeleted = true;
-      await writeFile(CARTS_FILE_PATH, JSON.stringify(carts, null, 2), "utf8");
-    }
+    // Mark the user's cart as deleted in the database.
+    await db.none('UPDATE carts SET is_deleted = $1 WHERE user_id = $2', [true, userId]);
   } catch (error) {
     throw new Error("Error marking user cart as deleted");
   }

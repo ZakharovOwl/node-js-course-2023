@@ -1,4 +1,22 @@
 [
-  { "id": "0fe36d16-49bc-4aab-a227-f84df899a6cb" },
-  { "id": "0fe36d16-49bc-4aab-a316-f84df9" }
+  {
+    "id": "50a34637-9e38-4f7d-849b-1c8c8fa487df",
+    "username": "Alex",
+    "email": "alex@example.com"
+  },
+  {
+    "id": "90e7a8d4-d4e5-4c95-8e4d-3f02d5be962c",
+    "username": "John",
+    "email": "john@example.com"
+  },
+  {
+    "id": "c2aaea49-d75f-45cb-99a5-5c9b72e7d7e3",
+    "username": "Sarah",
+    "email": "sarah@example.com"
+  },
+  {
+    "id": "19e751f2-dd56-4597-aab6-7c284fefe788",
+    "username": "Alex Test",
+    "email": "alex@example.com"
+  }
 ]

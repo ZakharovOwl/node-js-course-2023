@@ -1,0 +1,35 @@
+GET http://localhost:3000/api/products
+Accept: application/json
+x-user-id: 0fe36d16-49bc-4aab-a316-f84df9
+
+###
+# Create a user
+POST http://localhost:3000/api/user
+Content-Type: application/json
+
+{
+  "username": "Test1 Test2",
+  "email": "test@example.com"
+}
+
+###
+# Get all users
+GET http://localhost:3000/api/users
+
+###
+# Delete user
+DELETE http://localhost:3000/api/users/366e56d2-514d-439d-b6a8-ee1669b00986
+x-user-id: 366e56d2-514d-439d-b6a8-ee1669b00986
+
+#
+# CARTS
+#
+
+###
+# create cart
+POST http://localhost:3000/api/profile/cart
+x-user-id: 484409aa-f011-4f06-ada5-93fc68715433
+
+{
+  "user_id": "484409aa-f011-4f06-ada5-93fc68715433"
+}

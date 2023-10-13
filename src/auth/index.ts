@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { USERS_FILE_PATH } from "../constants/filePaths";
-import { readFile } from "fs/promises";
 import { RESPONSE_CODE_SERVER_ERROR } from "../constants/responseCodes";
+import { db } from "../repositories";
 
 async function authenticateUser(
   req: Request,
@@ -19,9 +18,7 @@ async function authenticateUser(
       });
     }
 
-    const usersData = await readFile(USERS_FILE_PATH, "utf8");
-    const users = JSON.parse(usersData);
-
+    const users = await db.any("SELECT * FROM users");
     const foundUser = users.find((user: { id: string }) => user.id === userId);
 
     if (!foundUser) {
