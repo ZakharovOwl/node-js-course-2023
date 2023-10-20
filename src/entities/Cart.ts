@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import { v4 as uuidv4 } from "uuid";
-import { CartItem } from "../types/types";
+import { CartItemType } from "../types/types";
 import { User } from "./User";
 import { Product } from "./Product";
 
@@ -13,7 +13,7 @@ export class Cart {
   isDeleted: boolean = false;
 
   @Property({ type: "jsonb" })
-  items: CartItem[] = [];
+  items: CartItemType[] = [];
 
   @ManyToOne(() => User)
   user!: User;
@@ -24,11 +24,12 @@ export class Cart {
 
   addItem(product: Product, count: number) {
     const existingItem = this.items.find(
-      (item) => item.product.id === product.id
+      (item) => item.product?.id === product.id,
     );
     if (existingItem) {
       existingItem.count += count;
     } else {
+      // @ts-ignore
       this.items.push({ product, count });
     }
   }
