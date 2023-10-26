@@ -1,15 +1,14 @@
 import { Request, Response } from "express";
-import { EntityManager } from "@mikro-orm/core";
-import { createUser, deleteUser, getAllUsers } from "../services/userService";
 import {
   RESPONSE_CODE_OK,
   RESPONSE_CODE_SERVER_ERROR,
 } from "../constants/responseCodes";
+// import { createUser, deleteUser, getAllUsers } from "../services/userService";
+import { User } from "../models";
 
 export async function createUserHandler(req: Request, res: Response) {
   try {
-    const em: EntityManager = (req as any).orm.em.fork();
-    const user = await createUser(em, req.body);
+    const user = await User.create(req.body);
 
     res.status(RESPONSE_CODE_OK).json({
       data: user,
@@ -25,8 +24,7 @@ export async function createUserHandler(req: Request, res: Response) {
 
 export async function getAllUsersHandler(req: Request, res: Response) {
   try {
-    const em: EntityManager = (req as any).orm.em.fork();
-    const users = await getAllUsers(em);
+    const users = await User.find({});
 
     res.status(RESPONSE_CODE_OK).json({
       data: users,
@@ -44,8 +42,7 @@ export async function deleteUserHandler(req: Request, res: Response) {
   const userId = req.params.id;
 
   try {
-    const em: EntityManager = (req as any).orm.em.fork();
-    await deleteUser(em, userId);
+    await User.findByIdAndDelete(userId);
 
     res.status(RESPONSE_CODE_OK).json({
       data: { success: true },

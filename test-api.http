@@ -8,7 +8,7 @@ POST http://localhost:3000/api/user
 Content-Type: application/json
 
 {
-  "username": "Test4 Test4",
+  "username": "Test4 Test4 Alex",
   "email": "test4@example.com"
 }
 
@@ -18,8 +18,8 @@ GET http://localhost:3000/api/users
 
 ###
 # Delete user
-DELETE http://localhost:3000/api/users/366e56d2-514d-439d-b6a8-ee1669b00986
-x-user-id: 366e56d2-514d-439d-b6a8-ee1669b00986
+DELETE http://localhost:3000/api/users/653228d7c76c0bbc274cc19c
+x-user-id: 653228d7c76c0bbc274cc19c
 
 #
 # CARTS
