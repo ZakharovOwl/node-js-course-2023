@@ -21,7 +21,7 @@ async function authenticateUser(
       });
     }
 
-    const user = await User.findOne({ _id: userId }).exec();
+    const user = await User.findById(userId).exec();
 
     if (!user) {
       return res.status(RESPONSE_CODE_UNAUTHORIZED).json({
