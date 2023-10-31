@@ -1,20 +1,33 @@
+import * as dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import {
   checkoutOrder,
   createCart,
-  createUserHandler,
   deleteCart,
-  deleteUserHandler,
-  getAllUsersHandler,
+  deleteUser,
+  getAllUsers,
   getCart,
   getProductById,
   getProductsList,
   updateCart,
+  userLogin,
+  userRegistration,
 } from "./controllers";
-import { authenticateUser } from "./auth";
+import { authenticateUser, CurrentUser } from "./auth";
 import mongoose from "mongoose";
+import { isAdmin } from "./middleware/isAdmin";
 
+declare global {
+  namespace Express {
+    interface Request {
+      user: CurrentUser;
+    }
+  }
+}
+
+dotenv.config();
+console.log(process.env.TOKEN_KEY);
 const app = express();
 const port = 3000;
 
@@ -34,35 +47,40 @@ async function main() {
 
     app.use(bodyParser.json());
 
-    // Create user
-    app.post("/api/user", createUserHandler);
-
     // Get users
-    app.get("/api/users", getAllUsersHandler);
+    app.get("/api/users", getAllUsers);
 
-    // Update user cart
-    app.delete("/api/users/:id", authenticateUser, deleteUserHandler);
+    // Delete User
+    app.delete("/api/users/:id", deleteUser);
+
+    // Create user
+    app.post("/api/register", userRegistration);
+
+    // Login user
+    app.post("/api/login", userLogin);
+
+    app.use("/api", authenticateUser);
 
     // Create user cart
-    app.post("/api/profile/cart", authenticateUser, createCart);
+    app.post("/api/profile/cart", createCart);
 
     // Get user cart
-    app.get("/api/profile/cart", authenticateUser, getCart);
+    app.get("/api/profile/cart", getCart);
 
     // Update user cart
-    app.put("/api/profile/cart", authenticateUser, updateCart);
+    app.put("/api/profile/cart", updateCart);
 
     // Empty user cart
-    app.delete("/api/profile/cart", authenticateUser, deleteCart);
+    app.delete("/api/profile/cart", isAdmin, deleteCart);
 
     // Create an order
-    app.post("/api/profile/cart/checkout", authenticateUser, checkoutOrder);
+    app.post("/api/profile/cart/checkout", checkoutOrder);
 
     // Returns a list of products
-    app.get("/api/products", authenticateUser, getProductsList);
+    app.get("/api/products", getProductsList);
 
     // Returns a single product
-    app.get("/api/products/:productId", authenticateUser, getProductById);
+    app.get("/api/products/:productId", getProductById);
 
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);

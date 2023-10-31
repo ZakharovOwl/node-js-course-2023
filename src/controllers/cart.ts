@@ -1,15 +1,16 @@
 import { Request, Response } from "express";
-import { CartItemType, User } from "../types/types";
+import { ICartItem } from "../types/types";
 import {
   RESPONSE_CODE_OK,
   RESPONSE_CODE_SERVER_ERROR,
 } from "../constants/responseCodes";
 import { createUserCart, getUserCart, updateUserCart } from "../services/cart";
 import { Cart } from "../models";
+import { CurrentUser } from "../auth";
 
 export async function createCart(req: Request, res: Response) {
   try {
-    const userId = (req as any).user.id;
+    const { id: userId } = req.user as CurrentUser;
     const { items } = req.body;
     const cart = await createUserCart(userId, items);
 
@@ -27,12 +28,11 @@ export async function createCart(req: Request, res: Response) {
 
 export async function getCart(req: Request, res: Response) {
   try {
-    const userId = ((req as any).user as User).id;
-
+    const { id: userId } = req.user as CurrentUser;
     const cart = await getUserCart(userId);
 
     const totalPrice = cart.items.reduce(
-      (total: number, item: CartItemType) =>
+      (total: number, item: ICartItem) =>
         total + item.product.price * item.count,
       0,
     );
@@ -50,21 +50,18 @@ export async function getCart(req: Request, res: Response) {
 }
 
 export async function updateCart(req: Request, res: Response) {
-  const userId = ((req as any).user as User).id;
+  const { id: userId } = req.user as CurrentUser;
   const updatedCart = req.body;
 
   try {
     const cart = await updateUserCart(userId, updatedCart.items);
 
-    const totalPrice = cart.items.reduce(
-      (total: number, item: CartItemType) => {
-        if (item.product) {
-          return total + item.product.price * item.count;
-        }
-        return total;
-      },
-      0,
-    );
+    const totalPrice = cart.items.reduce((total: number, item: ICartItem) => {
+      if (item.product) {
+        return total + item.product.price * item.count;
+      }
+      return total;
+    }, 0);
 
     res.status(RESPONSE_CODE_OK).json({
       data: { cart: cart, totalPrice },
@@ -79,7 +76,7 @@ export async function updateCart(req: Request, res: Response) {
 }
 
 export async function deleteCart(req: Request, res: Response) {
-  const userId = ((req as any).user as User).id;
+  const { id: userId } = req.user as CurrentUser;
 
   try {
     const userCart = await Cart.findOne({

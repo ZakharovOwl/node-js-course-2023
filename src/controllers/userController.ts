@@ -1,28 +1,85 @@
 import { Request, Response } from "express";
+import * as jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import { User } from "../models";
 import {
+  RESPONSE_CODE_BAD_REQUEST,
   RESPONSE_CODE_OK,
   RESPONSE_CODE_SERVER_ERROR,
 } from "../constants/responseCodes";
-// import { createUser, deleteUser, getAllUsers } from "../services/userService";
-import { User } from "../models";
 
-export async function createUserHandler(req: Request, res: Response) {
+export async function userRegistration(req: Request, res: Response) {
   try {
-    const user = await User.create(req.body);
+    // Get user input
+    const { firstName, lastName, isAdmin, email, password } = req.body;
 
-    res.status(RESPONSE_CODE_OK).json({
-      data: user,
-      error: null,
+    // Validate user input
+    if (!(email && password && firstName && lastName)) {
+      res.status(RESPONSE_CODE_BAD_REQUEST).send("All input is required");
+    }
+
+    // Validate if user already exist in our database
+    const oldUser = await User.findOne({ email });
+
+    if (oldUser) {
+      return res
+        .status(RESPONSE_CODE_BAD_REQUEST)
+        .send("User Already Exist. Please Login");
+    }
+
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    await User.create({
+      firstName,
+      lastName,
+      email: email.toLowerCase(),
+      password: encryptedPassword,
+      role: isAdmin === true ? "admin" : "user",
     });
-  } catch (error) {
-    res.status(RESPONSE_CODE_SERVER_ERROR).json({
-      data: null,
-      error: { message: "Error creating user" },
-    });
+
+    res.status(201).send("User successfully registered");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
   }
 }
 
-export async function getAllUsersHandler(req: Request, res: Response) {
+export async function userLogin(req: Request, res: Response) {
+  try {
+    // Get user input
+    const { email, password } = req.body;
+
+    // Validate user input
+    if (!(email && password)) {
+      res.status(RESPONSE_CODE_BAD_REQUEST).send("All input is required");
+    }
+    // Validate if user exist in our database
+    const user = await User.findOne({ email });
+
+    console.log("user", user);
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // Create token
+      const token = jwt.sign(
+        { userId: user._id, email, role: user.role },
+        process.env.TOKEN_KEY!,
+        {
+          expiresIn: "2h",
+        },
+      );
+
+      return res.status(200).json({
+        token,
+      });
+    }
+    res.status(RESPONSE_CODE_BAD_REQUEST).send("Invalid Credentials");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+export async function getAllUsers(req: Request, res: Response) {
   try {
     const users = await User.find({});
 
@@ -38,7 +95,7 @@ export async function getAllUsersHandler(req: Request, res: Response) {
   }
 }
 
-export async function deleteUserHandler(req: Request, res: Response) {
+export async function deleteUser(req: Request, res: Response) {
   const userId = req.params.id;
 
   try {
