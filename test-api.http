@@ -1,6 +1,6 @@
 ###
 GET http://localhost:3000/api/products
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQwZDQyNzZlMDljZDlhNjNhM2I1Y2YiLCJlbWFpbCI6InRlc3QxMjMzMjFAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTY5ODc0OTgxOCwiZXhwIjoxNjk4NzU3MDE4fQ.9jcLUnVRMJqpDZDDvyNTPhIt065T7wuR9UPJrU_Y63k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQwZDQyNzZlMDljZDlhNjNhM2I1Y2YiLCJlbWFpbCI6InRlc3QxMjMzMjFAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTY5ODk4ODY2NywiZXhwIjoxNjk4OTk1ODY3fQ.ghCPVihAeLWegJBqRsHd3a16Z6e1UnU9S5YJec8uzBE
 
 
 ###
@@ -9,10 +9,10 @@ POST http://localhost:3000/api/register
 Content-Type: application/json
 
 {
-  "firstName": "Alex",
-  "lastName": "Test",
+  "firstName": "AlexFirstName",
+  "lastName": "TestLastName",
   "isAdmin": false,
-  "email": "test123321@example.com",
+  "email": "testemail@example.com",
   "password": "12341234"
 }
 
@@ -35,7 +35,7 @@ POST http://localhost:3000/api/login
 Content-Type: application/json
 
 {
-  "email": "test123321@example.com",
+  "email": "testemail@example.com",
   "password": "12341234"
 }
 
@@ -65,5 +65,77 @@ x-user-id: 6540da38d0eaf07186aa44c0
 ###
 # create cart
 POST http://localhost:3000/api/profile/cart
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQwZDQyNzZlMDljZDlhNjNhM2I1Y2YiLCJlbWFpbCI6InRlc3QxMjMzMjFAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTY5ODc0OTgxOCwiZXhwIjoxNjk4NzU3MDE4fQ.9jcLUnVRMJqpDZDDvyNTPhIt065T7wuR9UPJrU_Y63k
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQ0OGI5ZWIxYzBlMjA3MDUwNDk5NTYiLCJlbWFpbCI6InRlc3RlbWFpbEBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjk4OTk2ODE4LCJleHAiOjE2OTkwMDQwMTh9.NeAgoJj2Cbq6NEkRwT5xIyUJLITgCVqrpSjP4u7e-U4
 
+{
+  "items": [
+    {
+      "product": {
+        "_id": "6532318a47076501150651e6",
+        "title": "Product 1",
+        "description": "Description 1",
+        "price": 10
+      },
+      "count": 2
+    },
+    {
+      "product": {
+        "_id": "6532318a47076501150651e7",
+        "title": "Product 2",
+        "description": "Description 2",
+        "price": 20
+      },
+      "count": 3
+    }
+  ]
+}
+
+###
+# get cart
+GET http://localhost:3000/api/profile/cart
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQ0OGI5ZWIxYzBlMjA3MDUwNDk5NTYiLCJlbWFpbCI6InRlc3RlbWFpbEBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjk4OTk2ODE4LCJleHAiOjE2OTkwMDQwMTh9.NeAgoJj2Cbq6NEkRwT5xIyUJLITgCVqrpSjP4u7e-U4
+
+###
+# update cart
+PUT http://localhost:3000/api/profile/cart
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQ0OGI5ZWIxYzBlMjA3MDUwNDk5NTYiLCJlbWFpbCI6InRlc3RlbWFpbEBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjk4OTk2ODE4LCJleHAiOjE2OTkwMDQwMTh9.NeAgoJj2Cbq6NEkRwT5xIyUJLITgCVqrpSjP4u7e-U4
+
+{
+  "items": [
+    {
+      "product": {
+        "_id": "6532318a47076501150651e8",
+        "title": "Product 3",
+        "description": "Description 3",
+        "price": 30
+      },
+      "count": 3
+    },
+    {
+      "product": {
+        "_id": "6532318a47076501150651e9",
+        "title": "Product 4",
+        "description": "Description 4",
+        "price": 40
+      },
+      "count": 2
+    }
+  ]
+}
+
+###
+# reset cart
+PUT http://localhost:3000/api/profile/cart
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQ0OGI5ZWIxYzBlMjA3MDUwNDk5NTYiLCJlbWFpbCI6InRlc3RlbWFpbEBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjk4OTk2ODE4LCJleHAiOjE2OTkwMDQwMTh9.NeAgoJj2Cbq6NEkRwT5xIyUJLITgCVqrpSjP4u7e-U4
+
+{
+  "items": []
+}
+
+###
+# delete cart (admin only)
+DELETE http://localhost:3000/api/profile/cart
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTQ0OGI5ZWIxYzBlMjA3MDUwNDk5NTYiLCJlbWFpbCI6InRlc3RlbWFpbEBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjk4OTkxMDI4LCJleHAiOjE2OTg5OTgyMjh9.784xsPhA0EFdbL8TVsuWgE3bbc1-G67-bA2MPNi1HZU

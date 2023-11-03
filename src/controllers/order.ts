@@ -9,7 +9,7 @@ import { createOrder } from "../services/order";
 import { CurrentUser } from "../auth";
 
 export async function checkoutOrder(req: Request, res: Response) {
-  const { id: userId } = req.user as CurrentUser;
+  const { userId } = req.user as CurrentUser;
   const userCart = await getUserCart(userId);
 
   if (!userCart?.items || userCart.items.length === 0) {

@@ -21,6 +21,7 @@ export interface ICart {
   user: ObjectId;
   isDeleted: boolean;
   items: ICartItem[];
+  totalPrice: number;
 }
 
 export interface IProduct {

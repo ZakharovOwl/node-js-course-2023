@@ -6,7 +6,7 @@ import {
 } from "../constants/responseCodes";
 
 export interface CurrentUser {
-  id: string;
+  userId: string;
   email: string;
   role: string;
 }

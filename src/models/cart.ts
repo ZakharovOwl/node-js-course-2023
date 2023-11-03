@@ -10,6 +10,7 @@ const cartSchema = new Schema<ICart>({
   isDeleted: { type: Boolean, default: false },
   items: { type: [cartItemSchema], default: [] },
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  totalPrice: { type: Number, default: 0 },
 });
 
 export const Cart = model("Cart", cartSchema);

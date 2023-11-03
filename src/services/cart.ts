@@ -1,6 +1,7 @@
 import { Cart, User } from "../models";
 import { ICartItem, ICart } from "../types/types";
 import { updateCartSchema } from "../helpers/validations";
+import { calculateTotalPrice } from "../helpers/totalPrice";
 
 export async function createUserCart(
   userId: string,
@@ -26,6 +27,8 @@ export async function createUserCart(
           newCart.items.push({ product, count });
         }
       }
+
+      newCart.totalPrice = calculateTotalPrice(items);
 
       await newCart.save();
 
@@ -73,17 +76,12 @@ export async function updateUserCart(
       items: cartItems,
     });
 
+    userCart.items = [];
+    userCart.totalPrice = calculateTotalPrice(cartItems);
+
     for (const item of cartItems) {
       const { product, count } = item;
-      const existingItemIndex = userCart.items.findIndex((cartItem) => {
-        return cartItem.product?.toString() === product?._id.toString();
-      });
-
-      if (existingItemIndex !== -1) {
-        userCart.items[existingItemIndex].count = count;
-      } else {
-        userCart.items.push({ product, count });
-      }
+      userCart.items.push({ product, count });
     }
 
     await userCart.save();
