@@ -47,17 +47,17 @@ async function main() {
 
     app.use(bodyParser.json());
 
+    // Create user
+    app.post("/register", userRegistration);
+
+    // Login user
+    app.post("/login", userLogin);
+
     // Get users
     app.get("/api/users", getAllUsers);
 
     // Delete User
     app.delete("/api/users/:id", deleteUser);
-
-    // Create user
-    app.post("/api/register", userRegistration);
-
-    // Login user
-    app.post("/api/login", userLogin);
 
     app.use("/api", authenticateUser);
 
