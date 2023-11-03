@@ -2,36 +2,40 @@ import { Request } from "express";
 import { EntityManager } from "@mikro-orm/core";
 import { ObjectId } from "mongoose";
 
-export interface User {
-  id: string;
-  username: string;
+export interface IUser {
+  _id: ObjectId;
+  firstName: string;
+  lastName: string;
   email: string;
+  password: string;
+  role: string;
 }
 
-export interface CartItemType {
-  product: ProductType;
+export interface ICartItem {
+  product: IProduct;
   count: number;
 }
 
-export interface CartType {
+export interface ICart {
   _id: ObjectId;
   user: ObjectId;
   isDeleted: boolean;
-  items: CartItemType[];
+  items: ICartItem[];
+  totalPrice: number;
 }
 
-export interface ProductType {
+export interface IProduct {
   _id: ObjectId;
   title: string;
   description: string;
   price: number;
 }
 
-export interface Order {
+export interface IOrder {
   id: string;
   userId: string;
   cartId: string;
-  items: CartItemType[];
+  items: ICartItem[];
   payment: {
     type: string;
     address: string;

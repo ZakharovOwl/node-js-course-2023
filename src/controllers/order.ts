@@ -6,9 +6,10 @@ import {
 } from "../constants/responseCodes";
 import { getUserCart } from "../services/cart";
 import { createOrder } from "../services/order";
+import { CurrentUser } from "../auth";
 
 export async function checkoutOrder(req: Request, res: Response) {
-  const userId = (req as any).user.id;
+  const { userId } = req.user as CurrentUser;
   const userCart = await getUserCart(userId);
 
   if (!userCart?.items || userCart.items.length === 0) {

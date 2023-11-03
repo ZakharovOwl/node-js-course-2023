@@ -1,11 +1,12 @@
 import { Cart, User } from "../models";
-import { CartItemType, CartType } from "../types/types";
+import { ICartItem, ICart } from "../types/types";
 import { updateCartSchema } from "../helpers/validations";
+import { calculateTotalPrice } from "../helpers/totalPrice";
 
 export async function createUserCart(
   userId: string,
-  items: CartItemType[],
-): Promise<CartType> {
+  items: ICartItem[],
+): Promise<ICart> {
   try {
     const user = await User.findById(userId);
 
@@ -27,6 +28,8 @@ export async function createUserCart(
         }
       }
 
+      newCart.totalPrice = calculateTotalPrice(items);
+
       await newCart.save();
 
       return newCart;
@@ -37,7 +40,7 @@ export async function createUserCart(
   }
 }
 
-export async function getUserCart(userId: string): Promise<CartType> {
+export async function getUserCart(userId: string): Promise<ICart> {
   const user = await User.findById(userId);
 
   if (!user) {
@@ -55,8 +58,8 @@ export async function getUserCart(userId: string): Promise<CartType> {
 
 export async function updateUserCart(
   userId: string,
-  cartItems: CartItemType[],
-): Promise<CartType> {
+  cartItems: ICartItem[],
+): Promise<ICart> {
   try {
     const userCart = await Cart.findOne({
       user: userId,
@@ -73,17 +76,12 @@ export async function updateUserCart(
       items: cartItems,
     });
 
+    userCart.items = [];
+    userCart.totalPrice = calculateTotalPrice(cartItems);
+
     for (const item of cartItems) {
       const { product, count } = item;
-      const existingItemIndex = userCart.items.findIndex((cartItem) => {
-        return cartItem.product?.toString() === product?._id.toString();
-      });
-
-      if (existingItemIndex !== -1) {
-        userCart.items[existingItemIndex].count = count;
-      } else {
-        userCart.items.push({ product, count });
-      }
+      userCart.items.push({ product, count });
     }
 
     await userCart.save();
