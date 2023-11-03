@@ -53,12 +53,6 @@ async function main() {
     // Login user
     app.post("/login", userLogin);
 
-    // Get users
-    app.get("/api/users", getAllUsers);
-
-    // Delete User
-    app.delete("/api/users/:id", deleteUser);
-
     app.use("/api", authenticateUser);
 
     // Create user cart
