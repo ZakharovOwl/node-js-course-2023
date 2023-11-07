@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import {
+  RESPONSE_CODE_CREATED,
   RESPONSE_CODE_OK,
   RESPONSE_CODE_SERVER_ERROR,
 } from "../constants/responseCodes";
@@ -14,7 +15,7 @@ export async function createCart(req: Request, res: Response) {
     const { items } = req.body;
     const cart = await createUserCart(userId, items);
 
-    res.status(201).json({
+    res.status(RESPONSE_CODE_CREATED).json({
       data: { cart, totalPrice: calculateTotalPrice(items) },
       error: null,
     });
