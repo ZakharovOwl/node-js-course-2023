@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "app": "nodemon src/index.ts",
+    "debug": "set DEBUG=my-app:* && nodemon src/index.ts",
+    "audit": "npm audit",
     "add-test-data": "nodemon src/test-data.ts",
     "test": "jest",
     "test:coverage": "jest --coverage",
