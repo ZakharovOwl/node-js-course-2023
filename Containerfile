@@ -7,9 +7,11 @@ WORKDIR /app
 # Copy the package.json and package-lock.json files
 COPY package*.json ./
 
-# Install dependencies and clean npm's cache
-RUN npm install --production && \
-    npm cache clean --force
+# Install TypeScript globally (if not already installed)
+RUN npm install -g typescript
+
+# Install dependencies for production
+RUN npm ci --production
 
 # Copy the application code
 COPY . .
@@ -20,8 +22,8 @@ USER node
 # Expose the port that the application runs on
 EXPOSE 3000
 
-# Define a health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 CMD curl --fail http://localhost:3000/health || exit 1
+# Compile TypeScript code to JavaScript
+RUN tsc
 
-# Start the application
-CMD [ "npm", "start" ]
+# Start the application (assuming compiled JavaScript code is in 'dist' directory)
+CMD ["node", "dist/index.js"]
