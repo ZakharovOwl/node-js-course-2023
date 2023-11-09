@@ -97,6 +97,7 @@ process.on("SIGINT", gracefulShutdown);
 
 async function main() {
   const mongoDB =
+    process.env.MONGODB_URI ||
     "mongodb+srv://test:test1@cluster0.f5eo0x4.mongodb.net/node-express-0";
 
   const options = {
@@ -172,10 +173,6 @@ async function main() {
 
     // Returns a single product
     app.get("/api/products/:productId", getProductById);
-
-    // app.listen(port, () => {
-    //   console.log(`Server is running on port ${port}`);
-    // });
   } catch (error) {
     console.error("Error while connecting to MongoDB:", error);
   }
