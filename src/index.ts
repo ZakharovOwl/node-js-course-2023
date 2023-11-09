@@ -16,7 +16,6 @@ import { authenticateUser, CurrentUser } from "./auth";
 import mongoose from "mongoose";
 import { isAdmin } from "./middleware/isAdmin";
 import net from "net";
-import debug from "debug";
 import morgan from "morgan";
 import logger from "./logs/logger";
 import {
@@ -32,15 +31,17 @@ declare global {
   }
 }
 
+const debugLogger = require("debug")("node-app:server");
+
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 const server = app.listen(port);
 
-const debugLogger = debug("node-app");
-
 let connections: net.Socket[] = [];
+
+debugLogger("This is a debug statement for node-app:server");
 
 server.on("connection", (connection) => {
   // register connections
@@ -55,7 +56,7 @@ server.on("connection", (connection) => {
 });
 
 server.on("listening", () => {
-  console.log(`Server is listening on port ${port}`);
+  debugLogger(`Server is listening on port ${port}`);
 });
 
 function gracefulShutdown() {
@@ -108,7 +109,7 @@ async function main() {
 
   try {
     await mongoose.connect(mongoDB, options);
-    console.log("Connected to MongoDB");
+    debugLogger("Connected to MongoDB");
 
     app.use(
       morgan("combined", {
