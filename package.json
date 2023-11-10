@@ -5,24 +5,41 @@
   "main": "index.js",
   "scripts": {
     "app": "nodemon src/index.ts",
-    "add-test-data": "nodemon src/test-data.ts"
+    "debug": "set DEBUG=node-app:* && nodemon src/index.ts",
+    "audit": "npm audit",
+    "add-test-data": "nodemon src/test-data.ts",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "lint": "lint-staged",
+    "build": "tsc",
+    "podman:build": "podman build -t container -f ./Containerfile",
+    "podman:run": "podman run -p 3000:3000 -d container"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.4",
+    "@types/debug": "^4.1.10",
     "@types/express": "^4.17.17",
+    "@types/jsonwebtoken": "^9.0.3",
+    "@types/morgan": "^1.9.6",
     "@types/node": "^20.5.7",
     "@types/pg": "^8.10.5",
     "@types/uuid": "^9.0.3",
+    "bcryptjs": "^2.4.3",
+    "debug": "^4.3.4",
+    "dotenv": "^16.3.1",
+    "husky": "^8.0.3",
     "jest": "^29.6.4",
+    "jsonwebtoken": "^9.0.2",
+    "lint-staged": "^15.0.2",
+    "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
-    "@types/jsonwebtoken": "^9.0.3",
-    "@types/bcryptjs": "^2.4.4",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "dotenv": "^16.3.1"
+    "uuid": "^9.0.0",
+    "winston": "^3.11.0"
   },
   "dependencies": {
     "@mikro-orm/cli": "^5.8.2",
@@ -35,11 +52,11 @@
     "csvtojson": "^2.0.10",
     "express": "^4.18.2",
     "joi": "^17.10.1",
+    "mongoose": "^7.5.3",
     "pg": "^8.11.3",
     "pg-promise": "^11.5.4",
     "prettier": "^3.0.3",
-    "uuid": "^9.0.0",
-    "mongoose": "^7.5.3"
+    "uuid": "^9.0.0"
   },
   "mikro-orm": {
     "useTsNode": true,
@@ -47,5 +64,17 @@
       "./src/config//mikro-orm.config.ts",
       "./dist/config/mikro-orm.config.js"
     ]
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm run test"
+    }
   }
 }
